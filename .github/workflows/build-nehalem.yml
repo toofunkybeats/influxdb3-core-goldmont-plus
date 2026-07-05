@@ -2,6 +2,17 @@ name: Build for Nehalem
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: InfluxDB version
+        required: true
+        default: v3.10.1
+        type: string
+      target_cpu:
+        description: Rust target-cpu value
+        required: true
+        default: goldmont-plus
+        type: string
 
 permissions:
   contents: write
@@ -9,8 +20,8 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  VERSION: v3.10.1
-  TARGET_CPU: goldmont-plus
+  VERSION: ${{ inputs.version || 'v3.10.1' }}
+  TARGET_CPU: ${{ inputs.target_cpu || 'goldmont-plus' }}
 
 jobs:
   build:
@@ -18,7 +29,7 @@ jobs:
 
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
+      IMAGE_NAME: influx-core
 
     permissions:
       contents: read
@@ -63,7 +74,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.VERSION }}
+            type=raw,value=${{ env.VERSION }}-${{ env.TARGET_CPU }}
             type=sha
 
       - name: Set up QEMU
