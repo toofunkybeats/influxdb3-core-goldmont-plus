@@ -10,7 +10,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   VERSION: v3.10.1
-  TARGET_CPU: nehalem
+  TARGET_CPU: goldmont-plus
 
 jobs:
   build:
