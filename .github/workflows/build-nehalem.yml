@@ -10,6 +10,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   VERSION: v3.10.1
+  TARGET_CPU: nehalem
 
 jobs:
   build:
@@ -41,13 +42,13 @@ jobs:
           ref: ${{ env.VERSION }}
           path: "influxdb"
 
-      - name: Apply patch
+      - name: Set target CPU in Cargo config
         working-directory: influxdb
-        run: "git apply ../influxdb-nehalem.patch"
+        run: sed -i "s/target-cpu=[^\"]*/target-cpu=$TARGET_CPU/" .cargo/config.toml
 
-      - name: Check apply patch
+      - name: Show Cargo config target CPU
         working-directory: influxdb
-        run: "git diff"
+        run: grep -n "target-cpu" .cargo/config.toml
 
       - name: Log in to the Container registry
         uses: docker/login-action@v4
